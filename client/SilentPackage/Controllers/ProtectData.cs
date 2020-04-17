@@ -161,7 +161,7 @@ namespace SilentPackage.Controllers
         }
     }
 
-    internal class FileManagement
+    public class FileManagement
     {
         public void CreateFile(string path, string name, byte[] data, bool force)
         {

@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Windows;
 
 namespace SilentPackage.Controllers
 {
@@ -64,22 +65,21 @@ namespace SilentPackage.Controllers
             using (var captureGraphic = Graphics.FromImage(bmp))
             {
                 captureGraphic.CopyFromScreen(0, 0, 0, 0, bmp.Size);
-                var path = filepath + @"\" + fileName;
                 ImageCodecInfo encode = GetEncoderInfo("image/jpeg");
                 try
                 {
                     //bmp.Save(path, ImageFormat.Jpeg);          
                     var param = new EncoderParameters(1);
                     param.Param[0] = new EncoderParameter(Encoder.Quality, (long)jpegQuality);
-                    bmp.Save(path, encode, param);
+                    bmp.Save(filepath+fileName, encode, param);
                 }
-                catch (ExternalException e)
-                {
-                    Console.WriteLine(e);
-                }
+                //catch (ExternalException e)
+               // {
+               //     MessageBox.Show(e.ToString());
+               // }
                 catch (ArgumentNullException e)
                 {
-                    Console.WriteLine(e);
+                    MessageBox.Show(e.ToString());
                 }
             }
         }

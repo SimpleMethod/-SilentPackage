@@ -26,7 +26,11 @@ namespace SilentPackage
                 EncryptDataHandler dataHandler = new EncryptDataHandler(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data");
                 dataHandler.CreatePair(null, false);
             }
-
+            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data\config.bin"))
+            {
+                ConfigurationManagement configManagement = ConfigurationManagement.GetInstance();
+                ReportsManagement management = new ReportsManagement();
+            }
         }
     }
 }

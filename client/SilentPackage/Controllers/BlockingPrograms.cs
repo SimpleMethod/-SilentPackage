@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
+using System.Windows;
 using Microsoft.Win32;
 
 namespace SilentPackage.Controllers
@@ -58,11 +60,21 @@ namespace SilentPackage.Controllers
         /// <param name="programsList"></param>
         private BlockingPrograms(List<string> programsList)
         {
+            //TODO: Sprawdzić dostępność do rejestru
             if (RegNodeExist() == false)
             {
-                Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\", true).SetValue("Explorer", 1, RegistryValueKind.DWord);
+                try
+                {
+                    Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\", true).SetValue("Explorer", 1, RegistryValueKind.DWord);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                   
+                }
+               
             }
 
+           
             DisablePolicy();
             EnablePolicy();
             foreach (var variable in programsList)
@@ -137,13 +149,18 @@ namespace SilentPackage.Controllers
             return true;
         }
 
+        //TODO: Sprawdzić dostępność do rejestru
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private bool RegNodeExist()
         {
             try
             {
-                RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies", true);
+                RegistryKey key =
+                    Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies", true);
                 if (key != null)
                 {
                     Console.WriteLine(key.GetValueNames().Contains("Explorer"));
@@ -155,6 +172,10 @@ namespace SilentPackage.Controllers
             catch (NullReferenceException e)
             {
                 Console.WriteLine(e);
+                return false;
+            }
+            catch (SecurityException e)
+            {
                 return false;
             }
         }
@@ -217,6 +238,7 @@ namespace SilentPackage.Controllers
         {
             try
             {
+                //TODO: Sprawdzić zabezpieczenia
                 if (RegKeyExist(name) != true)
                 {
                     RegistryKey key;
