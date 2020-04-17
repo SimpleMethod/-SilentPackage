@@ -1,0 +1,132 @@
+﻿<Window x:Class="SilentPackage.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SilentPackage"
+        mc:Ignorable="d"
+        Title="MainWindow" ResizeMode="NoResize" Height="450" Width="800">
+    <Grid>
+        <TabControl Margin="0,36,0,0">
+            <TabItem x:Name="windowsManagement" Header="Zarządzanie kontrolą ">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Header="Blokowanie programów" Margin="429,10,10,30">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0*"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="blockProgram_RemoveProgram_Exec" Content="Usuń program" Margin="176,21,10,0" VerticalAlignment="Top" Click="blockProgram_RemoveProgram_Click" Grid.ColumnSpan="2"/>
+                            <Button x:Name="blockProgram_AddProgram_Exec" Content="Dodaj program" Margin="10,21,176,0" VerticalAlignment="Top" Click="blockProgram_AddProgram_Click" Grid.Column="1"/>
+                            <ListView x:Name="blockProgram_List" Margin="10,60,10,10" Grid.ColumnSpan="2">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Ograniczenie czasu sesji" Margin="10,10,428,230">
+                        <Grid>
+                            <TextBox x:Name="windowsManagement_ShutDownTime_TextBox" LostFocus="TextBox_MinimalLength" Margin="106,54,10,0" Text="60" TextWrapping="Wrap" PreviewTextInput="windowsManagement_ShutDownTime_PreviewTextInput" CommandManager.PreviewExecuted="windowsManagement_ShutDownTime_PreviewExecuted" ContextMenu="{x:Null}" VerticalAlignment="Top" Height="18"/>
+                            <ComboBox x:Name="windowsManagement_ShutDownOption_ComboBox" Margin="106,29,10,0" IsReadOnly="True" VerticalAlignment="Top" Height="20"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,30,0,0" Text="Typ ograniczenia:" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="49,54,0,0" Text="Czas sesji:" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                            <CheckBox x:Name="windowsManagement_ShutDown_Enable_Exec" Content="Aktywacja usługi" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="windowsManagement_ShutDown_Enable_Exec_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Skanowanie procesów" Margin="10,210,428,30">
+                        <Grid>
+                            <CheckBox x:Name="windowsManagement_ListProcesses__Enable_Exec" Content="Aktywacja usługi" HorizontalAlignment="Center" VerticalAlignment="Center" Click="windowsManagement_ListProcesses__Enable_Exec_Click"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="windowsMonitoring" Header="Zarządzanie monitorem">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Header="Historia przeglądarki" Margin="10,10,428,230">
+                        <Grid>
+                            <Button x:Name="browsingHistory_AddPath_Exec" Content="Dodaj przeglądarkę" VerticalAlignment="Top" Click="browsingHistory_AddPath_Click" HorizontalAlignment="Center" Width="325" Margin="0,30,0,0"/>
+                            <CheckBox x:Name="windowsMonitoring_WebHistory_Enable_Exec" Content="Aktywacja usługi" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="windowsMonitoring_WebHistory_Enable_Exec_Click"/>
+                            <TextBox x:Name="windowsMonitoring_WebHistory_QueryLimit_TextBox" LostFocus="TextBox_MinimalLength" Margin="221,63,11,0" Text="10" TextWrapping="Wrap" PreviewTextInput="windowsManagement_ShutDownTime_PreviewTextInput" CommandManager.PreviewExecuted="windowsManagement_ShutDownTime_PreviewExecuted" ContextMenu="{x:Null}" VerticalAlignment="Top" Height="18" UndoLimit="1"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="11,63,0,0" Text="Ilość ostatnich odwiedzonych adresów:" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Skanowanie katalogów"  Margin="429,10,10,30">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="44*"/>
+                                <ColumnDefinition Width="301*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="windowsMonitoring_FileDirectory_RemovePath_Exec" Content="Usuń ścieżkę " Margin="132,10,10,0" VerticalAlignment="Top"  Grid.Column="1" Click="windowsMonitoring_FileDirectory_RemovePath_Exec_Click"/>
+                            <Button x:Name="windowsMonitoring_FileDirectory_AddPath_Exec" Content="Dodaj ścieżkę" Margin="10,10,178,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Click="windowsMonitoring_FileDirectory_AddPath_Exec_Click"/>
+                            <ListView x:Name="windowsMonitoring_FileDirectory_ListView" Margin="10,44,10,68" Grid.ColumnSpan="2">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,245,0,0" Text="Lista poszukiwanych rozszerzeń:" TextWrapping="Wrap" Grid.ColumnSpan="2" Height="16" VerticalAlignment="Top"/>
+                            <TextBox x:Name="windowsMonitoring_FileDirectory_EXT_TextBox" LostFocus="TextBox_CheckPatter" Margin="140,244,10,0" Text=".exe,.bin,.jpg" TextWrapping="Wrap" Grid.Column="1" Height="18" VerticalAlignment="Top"/>
+                            <CheckBox x:Name="windowsMonitoring_FileDirectory_RemovableDevices_Exec" Content="Skanowanie urządzeń przenośnych" HorizontalAlignment="Left" Margin="10,266,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Click="windowsMonitoring_FileDirectory_RemovableDevices_Exec_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Zrzuty ekranowane" Margin="10,210,428,30">
+                        <Grid>
+                            <CheckBox x:Name="windowsMonitoring_PrtScrn_Enable_Exec" Content="Aktywacja usługi" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="windowsMonitoring_PrtScrn_Enable_Exec_Click"/>
+                            <ComboBox x:Name="windowsMonitoring_PrtScrn_Quality_TextBox" Margin="113,35,10,0" VerticalAlignment="Top" Height="20"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,36,0,0" Text="Stopień kompresji:" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                            <TextBox x:Name="windowsMonitoring_PrtScrn_Offset_TextBox" LostFocus="TextBox_MinimalLength" Margin="195,66,10,0" TextWrapping="Wrap" CommandManager.PreviewExecuted="windowsManagement_ShutDownTime_PreviewExecuted" ContextMenu="{x:Null}" PreviewTextInput="windowsManagement_ShutDownTime_PreviewTextInput" VerticalAlignment="Top" Height="18" Text="10"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,66,0,0" Text="Częstotliwość tworzenia raportów:" TextWrapping="Wrap" Height="16" VerticalAlignment="Top"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Ustawienia" Margin="0,-1,0,1">
+                <Grid Background="#FFE5E5E5" Height="370">
+                    <GroupBox Header="Adres serwera C&amp;C" Margin="10,10,428,230">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0*"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBox x:Name="settingsPage_CC_URL_TextBox" LostFocus="TextBox_CheckURLAddress" Margin="106,10,10,0" TextWrapping="Wrap" CommandManager.PreviewExecuted="windowsManagement_ShutDownTime_PreviewExecuted" ContextMenu="{x:Null}" VerticalAlignment="Top" Height="18" MaxLength="64" Grid.RowSpan="2" Text="http://localhost:50225"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="44,11,0,0" Text="Adres URL:" TextWrapping="Wrap" VerticalAlignment="Top" Grid.RowSpan="2"/>
+                            <Button x:Name="settingsPage_CC_Testing_Exec" Content="Testuj połączenie" HorizontalAlignment="Center" Width="325" Margin="0,68,0,0" Height="20" VerticalAlignment="Top" Grid.RowSpan="2" Click="settingsPage_CC_Testing_Exec_Click"/>
+                            <PasswordBox x:Name="settingsPage_CC_Key_TextBox" LostFocus="PasswordBox_MinimalLength" Margin="106,33,10,0" VerticalAlignment="Top" CommandManager.PreviewExecuted="windowsManagement_ShutDownTime_PreviewExecuted" MaxLength="128" Grid.RowSpan="2"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="19,33,0,0" Text="Klucz produktu:" TextWrapping="Wrap" VerticalAlignment="Top" Grid.RowSpan="2"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Tryb pracy" Margin="10,210,428,30">
+                        <Grid>
+                            <CheckBox x:Name="settingsPage_TP_OfflineMode_Exec" Content="Praca w trybie offline" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="settingsPage_TP_OfflineMode_Exec_Click"/>
+                            <TextBox x:Name="settingsPage_TP_Offset_TexBox" LostFocus="TextBox_MinimalLength" Margin="10,52,10,0" TextWrapping="Wrap" PreviewTextInput="windowsManagement_ShutDownTime_PreviewTextInput" CommandManager.PreviewExecuted="windowsManagement_ShutDownTime_PreviewExecuted" ContextMenu="{x:Null}" VerticalAlignment="Top" Height="18" Text="10" MaxLength="3"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,31,0,0" Text="Częstotliwość tworzenia raportów: (minuty)" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Zapisz ustawienia" Margin="422,210,10,30">
+                        <Grid>
+                            <Button x:Name="settingsPage_Save_Exec" Content="Zapisz ustawienia" HorizontalAlignment="Center" VerticalAlignment="Center" Width="330" Click="settingsPage_Save_Exec_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Identyfikator maszyny" Margin="422,10,10,230">
+                        <Grid>
+                            <TextBox x:Name="settingsPage_ID_ID_TextBox" LostFocus="TextBox_MinimalLength" Margin="106,10,10,0" TextWrapping="Wrap" CommandManager.PreviewExecuted="windowsManagement_ShutDownTime_PreviewExecuted" ContextMenu="{x:Null}" VerticalAlignment="Top" Height="18" />
+                            <TextBlock HorizontalAlignment="Left" Margin="31,11,0,0" Text="Identyfikator:" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                            <Button x:Name="settingsPage_ID_GetID_Exec" Content="Pobierz mój identyfikator sprzętowy" HorizontalAlignment="Center" Width="325" Margin="0,68,0,0" Height="20" VerticalAlignment="Top" Click="settingsPage_ID_GetID_Exec_Click"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>
