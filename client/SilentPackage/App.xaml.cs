@@ -29,7 +29,8 @@ namespace SilentPackage
             if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data\config.bin"))
             {
                 ConfigurationManagement configManagement = ConfigurationManagement.GetInstance();
-                ReportsManagement management = new ReportsManagement();
+                //DataCollection management = DataCollection.GetInstance();
+                GeneralPurposeTimer generalPurposeTimer = GeneralPurposeTimer.GetInstance();
             }
         }
     }

@@ -14,60 +14,81 @@ using FileDirectory = SilentPackage.Models.FileDirectory;
 
 namespace SilentPackage.Controllers
 {
-    public class ReportsManagement
+
+
+
+    public class DataCollection
     {
-        readonly ConfigurationManagement _configurationManagement = ConfigurationManagement.GetInstance();
-
-
-        public ReportsManagement()
+        // readonly ConfigurationManagement _configurationManagement = ConfigurationManagement.GetInstance();
+        //GeneralPurposeTimer generalPurposeTimer = GeneralPurposeTimer.GetInstance();
+        private static DataCollection _mOInstance = null;
+        private static Object _mutex = new Object();
+        public static DataCollection GetInstance()
         {
-            ComboModel _comboModel = new ComboModel();
-            if (_configurationManagement.GetConfigModel().ListProcessesEnable)
+
+            if (_mOInstance == null)
             {
-                ProcessListManagement listManagement = new ProcessListManagement();
-                List<ProcessList> lists = new List<ProcessList>();
-                lists.Add(listManagement.GetProcessListReports());
-
-                _comboModel.ProcessLists = lists;
+                lock (_mutex)
+                {
+                    if (_mOInstance == null)
+                    {
+                        _mOInstance = new DataCollection();
+                    }
+                }
             }
-
-            if (_configurationManagement.GetConfigModel().WebHistoryEnable)
-            {
-                BrowsingHistoryManagement historyManagement = new BrowsingHistoryManagement();
-                _comboModel.BrowsingHistories.Add(historyManagement.GetBrowsingHistory());
-            }
-
-            if (_configurationManagement.GetConfigModel().FileDirectoryList != null)
-            {
-                ScanDirectoryManagement scanDirectoryManagement = new ScanDirectoryManagement();
-                _comboModel.DirectoryLists.Add(scanDirectoryManagement.GetFileDirectoryReports());
-            }
-
-
-
-
-            if (_configurationManagement.GetConfigModel().PrtScrnEnable)
-            {
-                var printScrManagementTimer = new PrintScrManagementTimer();
-                printScrManagementTimer.StartTimer(_configurationManagement.GetConfigModel().PrtScrInterval);
-            }
-
-            if (_configurationManagement.GetConfigModel().ShutDownEnable)
-            {
-                var shutDownTimer = new ShutDownTimer();
-                shutDownTimer.StartTimer(_configurationManagement.GetConfigModel().ShutDownTime);
-            }
-
-            if (_configurationManagement.GetConfigModel().ProgramBlockList != null)
-            {
-                BlockingProgramManagement _blockingProgram = new BlockingProgramManagement();
-            }
-            GeneralPurposeTimer generalPurposeTimer = GeneralPurposeTimer.GetInstance(1);
-
-            
+            return _mOInstance;
         }
+
+        private DataCollection()
+        {
+
+        }
+
+        //public ComboModel GetComboModel()
+        //{
+        //    return generalPurposeTimer.GetComboModel();
+        //}
     }
 
+    public class PrintScrFileManagement
+    {
+        private readonly string[] _strlist = { ".jpg" };
+
+        public List<Models.FileDirectory> GetPrintScrFile()
+        {
+            List<Models.FileDirectory> fileDirectories = new List<Models.FileDirectory>();
+            foreach (var e in FileDirectory.ScanDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\screenshot\", _strlist))
+            {
+                fileDirectories.Add(new Models.FileDirectory(e.FullName.ToString(), e.CreationTimeUtc.ToString(), e.LastAccessTimeUtc.ToString(), e.LastWriteTimeUtc.ToString()));
+            }
+            return fileDirectories;
+        }
+
+        public void DeleteFile(string name)
+        {
+            try
+            {
+                File.Delete(name);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                //throw;
+            }
+        }
+
+        public void ClearDirectory()
+        {
+            List<Models.FileDirectory> fileDirectories = GetPrintScrFile();
+            foreach (var eDirectory in fileDirectories)
+            {
+                DeleteFile(eDirectory.FullName);
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
     public class PrintScrManagementTimer
     {
         readonly PrintScrManagement _printScrManagement = new PrintScrManagement();
@@ -85,17 +106,27 @@ namespace SilentPackage.Controllers
             _printScrManagement.GetPrintScreen();
         }
     }
-
+    /// <summary>
+    /// Class to start main timer.
+    /// </summary>
     public class GeneralPurposeTimer
     {
         ComboModel _comboModel = new ComboModel();
-        int _iteration = 0;
+        private int _iteration = 0;
+        private int _interval = 0;
+        private bool _smallState = false;
         readonly ConfigurationManagement _configurationManagement = ConfigurationManagement.GetInstance();
+
+        private Stack<ProcessList> processLists = new Stack<ProcessList>();
+        private  Stack<BrowsingHistoryLists> browsingHistory = new Stack<BrowsingHistoryLists>();
+        private Stack<FileDirectoryList> fileDirectory = new Stack<FileDirectoryList>();
+        private DocumentTableGeneration documentTableGeneration = new DocumentTableGeneration();
+
 
         private static GeneralPurposeTimer _mOInstance = null;
         private static Object _mutex = new Object();
-        private int _interval = 0;
-        public static GeneralPurposeTimer GetInstance(int interval)
+
+        public static GeneralPurposeTimer GetInstance()
         {
 
             if (_mOInstance == null)
@@ -104,28 +135,33 @@ namespace SilentPackage.Controllers
                 {
                     if (_mOInstance == null)
                     {
-                        _mOInstance = new GeneralPurposeTimer(interval);
+                        _mOInstance = new GeneralPurposeTimer();
                     }
                 }
             }
             return _mOInstance;
         }
 
-        private GeneralPurposeTimer(int interval)
+        private GeneralPurposeTimer()
         {
-            _interval = interval;
-            StartTimer(_interval);
-        }
+            StartTimer();
 
+            if (_configurationManagement.GetConfigModel().PrtScrnEnable)
+            {
+                var printScrManagementTimer = new PrintScrManagementTimer();
+                printScrManagementTimer.StartTimer(_configurationManagement.GetConfigModel().PrtScrInterval);
+            }
 
+            if (_configurationManagement.GetConfigModel().ShutDownEnable)
+            {
+                var shutDownTimer = new ShutDownTimer();
+                shutDownTimer.StartTimer(_configurationManagement.GetConfigModel().ShutDownTime);
+            }
 
-        private void StartTimer(int minutes)
-        {
-            var oTimer = new Timer();
-            oTimer.Elapsed += new ElapsedEventHandler(OnTimeEvent);
-            //oTimer.Interval = TimeSpan.FromMinutes(minutes).TotalMilliseconds;
-            oTimer.Interval = 30000;
-            oTimer.Enabled = true;
+            if (_configurationManagement.GetConfigModel().ProgramBlockList != null)
+            {
+                var blockingProgram = new BlockingProgramManagement();
+            }
         }
 
         public ComboModel GetComboModel()
@@ -133,30 +169,120 @@ namespace SilentPackage.Controllers
             return _comboModel;
         }
 
+        public void ClearStack()
+        {
+            _comboModel.ProcessLists.Clear();
+            _comboModel.BrowsingHistories.Clear();
+            _comboModel.BrowsingHistories.Clear();
+        }
+
+        private void StartTimer()
+        {
+            int interval = _configurationManagement.GetConfigModel().IntervalTime;
+            int masterInterval = interval;
+            _smallState = false;
+            if (interval <= 10)
+            {
+                _interval = interval;
+                _smallState = true;
+            }
+            else
+            {
+                _interval = (interval / 10);
+            }
+            var oTimer = new Timer();
+            oTimer.Elapsed += new ElapsedEventHandler(OnTimeEvent);
+            //oTimer.Interval = TimeSpan.FromMinutes(interval).TotalMilliseconds;
+            oTimer.Interval = 10000;
+            oTimer.Enabled = true;
+        }
+
         private void OnTimeEvent(object oSource, ElapsedEventArgs oElapsedEventArgs)
         {
+            bool processEnable = false;
+            bool historyEnable = false;
+            bool fileDirectoryEnable = false;
             if (_configurationManagement.GetConfigModel().ListProcessesEnable)
             {
                 ProcessListManagement listManagement = new ProcessListManagement();
-                _comboModel.ProcessLists.Add(listManagement.GetProcessListReports());
+                processLists.Push(listManagement.GetProcessListReports());
+                processEnable = true;
             }
 
             if (_configurationManagement.GetConfigModel().WebHistoryEnable)
             {
                 BrowsingHistoryManagement historyManagement = new BrowsingHistoryManagement();
-                _comboModel.BrowsingHistories.Add(historyManagement.GetBrowsingHistory());
+                browsingHistory.Push(historyManagement.GetBrowsingHistory());
+                historyEnable = true;
             }
 
             if (_configurationManagement.GetConfigModel().FileDirectoryList != null)
             {
                 ScanDirectoryManagement scanDirectoryManagement = new ScanDirectoryManagement();
-                _comboModel.DirectoryLists.Add(scanDirectoryManagement.GetFileDirectoryReports());
+                fileDirectory.Push(scanDirectoryManagement.GetFileDirectoryReports());
+                fileDirectoryEnable = true;
+            }
+            _iteration++;
+
+            if (_smallState)
+            {
+               
+                if (_iteration == _interval)
+                {
+                    MessageBox.Show(fileDirectory.Count.ToString());     
+                    if (processEnable)
+                    {
+                        _comboModel.ProcessLists = processLists;
+                    }
+
+                    if (historyEnable)
+                    {
+                        _comboModel.BrowsingHistories = browsingHistory;
+                    }
+
+                    if (fileDirectoryEnable)
+                    {
+                        _comboModel.DirectoryLists = fileDirectory;
+                    }
+
+
+
+                  
+                    //MessageBox.Show(_comboModel.ProcessLists.Count.ToString());
+                    //MessageBox.Show(documentTableGeneration.GenerateTable(_comboModel.ProcessLists, 0));
+                    //MessageBox.Show(documentTableGeneration.GenerateTable(_comboModel.BrowsingHistories, 1));
+                    MessageBox.Show(documentTableGeneration.GenerateTable(_comboModel.DirectoryLists, 2));
+                    _iteration = 0;
+                }
+
             }
 
-            _iteration++;
+            /*
+            if (_iteration == 10)
+            {
+                if (processEnable)
+                {
+                    _comboModel.ProcessLists = processLists;
+                }
+
+                if (historyEnable)
+                {
+                    _comboModel.BrowsingHistories = browsingHistory;
+                }
+
+                if (FileDirectoryEnable)
+                {
+                    _comboModel.DirectoryLists = fileDirectory;
+                }
+                _iteration = 0;
+            }
+            */
         }
     }
 
+    /// <summary>
+    /// Class for session time limitation
+    /// </summary>
     public class ShutDownTimer
     {
         readonly ConfigurationManagement _configurationManagement = ConfigurationManagement.GetInstance();
@@ -167,6 +293,7 @@ namespace SilentPackage.Controllers
             oTimer.Elapsed += new ElapsedEventHandler(OnTimeEvent);
             oTimer.Interval = TimeSpan.FromMinutes(minutes).TotalMilliseconds;
             oTimer.Enabled = true;
+            //_management.DisplayInformationMessageBox("Na tym komputerze uruchomiono ograniczenie czasu pracy. Pozostało:"+ minutes + " minut do zakończenia sesji.", "Ograniczenie czasu pracy!");
         }
 
 
@@ -189,7 +316,9 @@ namespace SilentPackage.Controllers
         }
     }
 
-
+    /// <summary>
+    /// Class to handle program blocking.
+    /// </summary>
     public class BlockingProgramManagement
     {
         readonly BlockingPrograms _blocking = BlockingPrograms.GetInstance(ConfigurationManagement.GetInstance().GetConfigModel().ProgramBlockList);
@@ -200,6 +329,9 @@ namespace SilentPackage.Controllers
 
     }
 
+    /// <summary>
+    /// Class for viewing user history.
+    /// </summary>
     public class BrowsingHistoryManagement
     {
         readonly ConfigurationManagement _configurationManagement = ConfigurationManagement.GetInstance();
@@ -209,7 +341,7 @@ namespace SilentPackage.Controllers
             var configModel = _configurationManagement.GetConfigModel();
             var browsing = BrowsingHistory.GetInstance("Default", configModel.WebHistoryPath);
             var browsingHistoryLists = new BrowsingHistoryLists();
-            List< BrowsingHistoryTab > browsingHistoryTabs = new List<BrowsingHistoryTab>();
+            List<BrowsingHistoryTab> browsingHistoryTabs = new List<BrowsingHistoryTab>();
 
             foreach (var f in browsing.GetHistoryFromDatabase(configModel.WebHistoryQueryLimit))
             {
@@ -222,6 +354,9 @@ namespace SilentPackage.Controllers
         }
     }
 
+    /// <summary>
+    /// Class for creating screenshots.
+    /// </summary>
     public class PrintScrManagement
     {
         readonly ConfigurationManagement _configurationManagement = ConfigurationManagement.GetInstance();
@@ -276,6 +411,9 @@ namespace SilentPackage.Controllers
         }
     }
 
+    /// <summary>
+    /// Class for directory scanning.
+    /// </summary>
     public class ScanDirectoryManagement
     {
         readonly ConfigurationManagement _configurationManagement = ConfigurationManagement.GetInstance();
@@ -313,6 +451,9 @@ namespace SilentPackage.Controllers
         }
     }
 
+    /// <summary>
+    /// Class using to getting the process list.
+    /// </summary>
     public class ProcessListManagement
     {
         private readonly WindowsManagement _windows = new WindowsManagement();

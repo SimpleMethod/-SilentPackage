@@ -20,6 +20,8 @@ namespace SilentPackage.Models
         public List<string> FileDirectoryList { get; set; }
         public string FileDirectoryExtension { get; set; }
         public bool RemovableDevicesEnable { get; set; }
+
+        public int IntervalTime { get; set; }
         public bool OfflineMode { get; set; }
         public string AddressCc { get; set; }
         public string License { get; set; }

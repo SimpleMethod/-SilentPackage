@@ -7,8 +7,8 @@ namespace SilentPackage.Models
 {
     public class ComboModel
     {
-        public List<BrowsingHistoryLists> BrowsingHistories { get; set; }
-        public List<FileDirectoryList> DirectoryLists { get; set; }
-        public List<ProcessList> ProcessLists { get; set; }
+        public Stack<BrowsingHistoryLists> BrowsingHistories { get; set; }
+        public Stack<FileDirectoryList> DirectoryLists { get; set; }
+        public Stack<ProcessList> ProcessLists { get; set; }
     }
 }
