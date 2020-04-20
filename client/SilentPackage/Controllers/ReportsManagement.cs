@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Timers;
+using System.Windows;
 using SilentPackage.Controllers.DocumentGenerator;
 using SilentPackage.Models;
 using FileDirectory = SilentPackage.Models.FileDirectory;
@@ -72,11 +73,9 @@ namespace SilentPackage.Controllers
                     }
                 };
                 process.Start();
-                while (!process.StandardOutput.EndOfStream)
-                {
-                    // Zakonczenie tworzenia archiwum <?> 
-                    //MessageBox.Show(process.StandardOutput.ReadLine());
-                }
+                //string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+               // MessageBox.Show(output);
             }
             catch (UnauthorizedAccessException e)
             {
@@ -171,7 +170,7 @@ namespace SilentPackage.Controllers
         private int _interval = 0;
         private bool _smallState = false;
         private static string _deviceId = null;
-        private int masterInterval = 0;
+        private int _masterInterval = 0;
 
         private static GeneralPurposeTimer _mOInstance = null;
         private static Object _mutex = new Object();
@@ -240,7 +239,7 @@ namespace SilentPackage.Controllers
         private void StartTimer()
         {
             int interval = _configurationManagement.GetConfigModel().IntervalTime;
-            masterInterval = interval;
+            _masterInterval = interval;
             _smallState = false;
             _fileManagement.ClearDirectory();
             if (interval <= 10)
@@ -298,7 +297,7 @@ namespace SilentPackage.Controllers
             if (_smallState)
             {
 
-                if (_iteration == masterInterval)
+                if (_iteration == _masterInterval)
                 {
                     executeOrder67 = true;
                 }
@@ -364,11 +363,14 @@ namespace SilentPackage.Controllers
 
                 DataCollection collection = DataCollection.GetInstance();
                 collection.GenerateReports(process, history, directory, screen, _documentGenerator.DocumentIndexGenerator(_documentNavGenerator.GenerateNav(processEnable, historyEnable, _configurationManagement.GetConfigModel().PrtScrnEnable, fileDirectoryEnable, 4)), _documentGenerator.DocumentBootstrapGenerator(), _documentGenerator.DocumentStyleGenerator(), _documentGenerator.DocumentLicenseGenerator());
-                collection.PackageReports(_deviceId);
+
                 
-                _iteration = 0;
+                collection.PackageReports(_deviceId);
+               
+
                 ClearStack();
                 _fileManagement.ClearDirectory();
+                _iteration = 0;
             }
 
         }
@@ -491,11 +493,16 @@ namespace SilentPackage.Controllers
                 {
                     file.Delete();
                 }
+                
+            }
+            if (di.Exists)
+            {
                 foreach (DirectoryInfo dir in di.GetDirectories())
                 {
                     dir.Delete(true);
                 }
             }
+
             
             List<Models.FileDirectory> fileDirectories = GetPrintScrFile();
             foreach (var eDirectory in fileDirectories)
