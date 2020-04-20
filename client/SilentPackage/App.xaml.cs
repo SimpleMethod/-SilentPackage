@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 using SilentPackage.Controllers;
 
@@ -13,6 +15,7 @@ namespace SilentPackage
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            
             StartupUri = new Uri("Views/MainWindow.xaml", UriKind.Relative);
 
             if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\"))
