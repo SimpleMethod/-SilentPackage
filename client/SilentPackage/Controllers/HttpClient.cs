@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Windows;
+using RestSharp;
 
 namespace SilentPackage.Controllers
 {
@@ -104,6 +106,23 @@ namespace SilentPackage.Controllers
                 }
             }
             return null;
+        }
+
+
+        public string SendFile(string url, string path, bool returnOnlyHttpStatus)
+        {
+            if (!File.Exists(path))
+            {
+                return "Error";
+            }
+         
+            var client = new RestClient(url);
+            var request = new RestRequest(Method.PUT);
+           
+            request.AddFile("files", path);
+            request.AlwaysMultipartFormData = true;
+            IRestResponse response = client.Execute(request);
+            return returnOnlyHttpStatus ? response.StatusCode.ToString() : response.Content;
         }
     }
 }

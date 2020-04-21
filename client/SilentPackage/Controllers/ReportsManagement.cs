@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Timers;
 using System.Windows;
 using SilentPackage.Controllers.DocumentGenerator;
@@ -75,7 +76,7 @@ namespace SilentPackage.Controllers
                 process.Start();
                 //string output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
-               // MessageBox.Show(output);
+                // MessageBox.Show(output);
             }
             catch (UnauthorizedAccessException e)
             {
@@ -131,7 +132,6 @@ namespace SilentPackage.Controllers
                 byte[] dataBytes = new UTF8Encoding(true).GetBytes(screenshotsPage);
                 fs.Write(dataBytes, 0, dataBytes.Length);
             }
-
             using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\bootstrap.min.css"))
             {
                 byte[] dataBytes = new UTF8Encoding(true).GetBytes(bootstrap);
@@ -148,7 +148,7 @@ namespace SilentPackage.Controllers
                 fs.Write(dataBytes, 0, dataBytes.Length);
             }
 
-          
+
         }
     }
 
@@ -312,6 +312,7 @@ namespace SilentPackage.Controllers
 
             if (executeOrder67)
             {
+                long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
                 string process = null;
                 string history = null;
                 string directory = null;
@@ -363,13 +364,24 @@ namespace SilentPackage.Controllers
 
                 DataCollection collection = DataCollection.GetInstance();
                 collection.GenerateReports(process, history, directory, screen, _documentGenerator.DocumentIndexGenerator(_documentNavGenerator.GenerateNav(processEnable, historyEnable, _configurationManagement.GetConfigModel().PrtScrnEnable, fileDirectoryEnable, 4)), _documentGenerator.DocumentBootstrapGenerator(), _documentGenerator.DocumentStyleGenerator(), _documentGenerator.DocumentLicenseGenerator());
-
-                
-                collection.PackageReports(_deviceId);
-               
-
+                collection.PackageReports(timestamp.ToString());
                 ClearStack();
                 _fileManagement.ClearDirectory();
+                if (!_configurationManagement.GetConfigModel().OfflineMode)
+                {
+                    FileManagement management = new FileManagement();
+                    HttpClient client = new HttpClient();
+                    byte[] data = management.Base64Decode(_configurationManagement.GetConfigModel().License);
+                    DecryptDataHandler dataHandler = new DecryptDataHandler(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data");
+                    StringBuilder urlBuilder = new StringBuilder(_configurationManagement.GetConfigModel().AddressCc + "/api/1.0/reports/" + dataHandler.DecryptText(data) + "/" + _deviceId);
+                    Thread.Sleep(200);
+                    // MessageBox.Show(urlBuilder.ToString());
+                    string status = client.SendFile(urlBuilder.ToString(), Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\"+timestamp.ToString() + ".7z", true);
+                    if (status.Equals("200"))
+                    {
+                        _fileManagement.RemoveReports();
+                    }
+                }
                 _iteration = 0;
             }
 
@@ -493,7 +505,7 @@ namespace SilentPackage.Controllers
                 {
                     file.Delete();
                 }
-                
+
             }
             if (di.Exists)
             {
@@ -503,7 +515,7 @@ namespace SilentPackage.Controllers
                 }
             }
 
-            
+
             List<Models.FileDirectory> fileDirectories = GetPrintScrFile();
             foreach (var eDirectory in fileDirectories)
             {

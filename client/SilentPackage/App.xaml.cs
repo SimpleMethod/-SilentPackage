@@ -15,7 +15,7 @@ namespace SilentPackage
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-          
+     
             if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\"))
             {
                 DirectoryInfo di = Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\");
