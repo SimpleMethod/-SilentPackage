@@ -2,7 +2,249 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<main role="main" class="">
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h4 class="h4">API </h4></div>
+<div ng-controller="selectAPI">
+
+    <form name="api" class="simple-form">
+        <div class="form-group">
+            <label for="singleSelect"> Wybór API: </label><br>
+            <select name="singleSelect" ng-model="data.singleSelect" class="browser-default custom-select">
+                <option value="50225">Debug build</option>
+                <option value="5001">Release build </option>
+            </select>
+
+        </div>
+        <input type="submit" ng-click="save()" value="Potwierdź wybór api" class="btn btn-primary"/>
+    </form>
 </div>
+
+
+    <hr>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h4 class="h4">Informacje o użytkowniku: </h4>
+    </div>
+    <div ng-controller="userInfo">
+        <form novalidate class="simple-form">
+            <div class="form-group">
+                <label>Licencja:</label> <input type="text" ng-model="user.id" class="form-control">
+            </div>
+            <input type="submit" ng-click="get(user)" value="Pobierz informacje o użytkowniku"
+                   class="btn btn-success" />
+        </form>
+        <br>
+        <table ng-if="userList.License" id="userinfo" class="table table-striped table-bordered table-sm"
+               cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th class="th-sm">
+                        Licencja
+                    </th>
+                    <th class="th-sm">
+                        Przypisany identyfiaktor maszyny
+                    </th>
+                </tr>
+            </thead>
+            <tr>
+                <td>{{userList.License}}</td>
+                <td>{{userList.DeviceId}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h4 class="h4">Lista użytkowników: </h4>
+    </div>
+    <div ng-controller="usersList">
+        <input type="submit" ng-click="open()" value="Pobierz listę użytkowników" class="btn btn-success" />
+        <br><br>
+        <table ng-if="userList" id="TableData" class="table table-striped table-bordered table-sm"
+               cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th class="th-sm">
+                        Licencja
+                    </th>
+                    <th class="th-sm">
+                        Przypisany identyfiaktor maszyny
+                    </th>
+                </tr>
+            </thead>
+            <tr ng-repeat="x in userList">
+                <td>{{x.License}}</td>
+                <td>{{x.DeviceId}}</td>
+            </tr>
+        </table>
+    </div>
+    <hr>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h4 class="h4">Dodawanie użytkownika: </h4>
+    </div>
+    <div ng-controller="createUser">
+        <form novalidate class="simple-form">
+            <div class="form-group">
+                <label>Licencja:</label> <input type="text" ng-model="user.id" class="form-control" required>
+            </div>
+            <input type="submit" ng-click="create(user)" value="Dodaj użytkownika" class="btn btn-success" />
+        </form>
+    </div>
+    <hr>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h4 class="h4">Zmiana indentyfikatora sprzętowego: </h4>
+    </div>
+    <div ng-controller="updateDeviceID">
+        <form novalidate class="simple-form">
+            <div class="form-group">
+                <label>Licencja:</label> <input type="text" ng-model="user.id" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Identyfikator urządzenia:</label> <input type="text" ng-model="user.deviceid" class="form-control"
+                                                                required>
+            </div>
+            <input type="submit" ng-click="update(user)" value="Zmień identyfikator" class="btn btn-warning" />
+        </form>
+    </div>
+    <hr>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h4 class="h4">Usuwanie użytkownika: </h4>
+    </div>
+    <div ng-controller="deleteUser">
+        <form novalidate class="simple-form">
+            <div class="form-group">
+                <label>Licencja:</label> <input type="email" ng-model="user.id" class="form-control" />
+            </div>
+            <input type="submit" ng-click="delete(user)" value="Usuwanie użytkownika" class="btn btn-danger"
+                   required>
+        </form>
+    </div>
+    <hr>
+
+    <hr>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h4 class="h4">Lista raportów użytkownika: </h4>
+    </div>
+    <div ng-controller="reportInfo">
+        <form novalidate class="simple-form">
+            <div class="form-group">
+                <label>Identyfikator urządzenia:</label> <input type="text" ng-model="user.id" class="form-control">
+            </div>
+            <input type="submit" ng-click="get(user)" value="Pobierz listę raportów użytkownika"
+                   class="btn btn-success" />
+        </form>
+        <br>
+        <table ng-if="reports" id="movieInfo" class="table table-striped table-bordered table-sm"
+               cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th class="th-sm">
+                        #
+                    </th>
+                    <th class="th-sm">
+                        Data raportu
+                    </th>
+                    <th class="th-sm">
+                        Nazwa pliku
+                    </th>
+                    <th class="th-sm">
+                        Raport:
+                    </th>
+                </tr>
+            </thead>
+            <tr ng-repeat="filenmae in reports">
+                <td><p>{{$index + 1}}</p></td>
+                <td>
+                    <div ng-controller="TimestampCtrl">
+                        {{ toTimestamp(filenmae) }}
+                    </div>
+                </td>
+                <td>{{filenmae}}.7z</td>
+                <td><a href="{{url}}{{user.id}}/{{filenmae}}.7z" class="btn btn-primary" target="_blank">Pobierz raport</a></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h4 class="h4">Lista raportów użytkownika pomiędzy datami: </h4>
+    </div>
+    <div ng-controller="reportList">
+        <form novalidate class="simple-form">
+            <div class="form-group">
+                <label>Identyfikator sprzetowy:</label> <input type="text" ng-model="reports.id"
+                                                               class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Zakres początkowy daty:</label> <input type="text" ng-model="reports.startrange"
+                                                              class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Zakres końcowy daty:</label> <input type="text" ng-model="reports.endrange"
+                                                           class="form-control">
+            </div>
+            <input type="submit" ng-click="open(reports)" value="Pobierz listę raportów użytkownika"
+                   class="btn btn-success" />
+        </form>
+        <br><br>
+        <table ng-if="reportsList" id="movieLists" class="table table-striped table-bordered table-sm"
+               cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th class="th-sm">
+                        #
+                    </th>
+                    <th class="th-sm">
+                        Data raportu
+                    </th>
+                    <th class="th-sm">
+                        Nazwa pliku
+                    </th>
+                    <th class="th-sm">
+                        Raport:
+                    </th>
+                </tr>
+            </thead>
+            <tr ng-repeat="filenmae in reportsList">
+                <td><p>{{$index + 1}}</p></td>
+                <td>
+                    <div ng-controller="TimestampCtrl">
+                        {{ toTimestamp(filenmae) }}
+                    </div>
+                </td>
+                <td>{{filenmae}}.7z</td>
+                <td><a href="{{url}}{{reports.id}}/{{filenmae}}.7z" class="btn btn-primary" target="_blank">Pobierz raport</a></td>
+            </tr>
+        </table>
+    </div>
+    <hr>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h4 class="h4">Usuwanie raportu: </h4>
+    </div>
+    <div ng-controller="deleteReport">
+        <form novalidate class="simple-form">
+            <div class="form-group">
+                <label>Identyfikator użytkownika:</label> <input type="text" ng-model="report.deviceid"
+                                                                 class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Identyfikator raportu:</label> <input type="number" ng-model="report.filename"
+                                                             class="form-control" required>
+            </div>
+            <input type="submit" ng-click="open(report)" value="Usuń raport" class="btn btn-danger" />
+        </form>
+    </div>
+    <hr>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h4 class="h4">Usuwanie wszystkich raportów: </h4>
+    </div>
+    <div ng-controller="deleteAllReport">
+        <form novalidate class="simple-form">
+            <div class="form-group">
+                <label>Identyfikator użytkownika:</label> <input type="text" ng-model="report.id"
+                                                                 class="form-control" required>
+            </div>
+            <input type="submit" ng-click="open(report)" value="Usuń wszystkie raporty" class="btn btn-danger" />
+        </form>
+    </div>
+</main>

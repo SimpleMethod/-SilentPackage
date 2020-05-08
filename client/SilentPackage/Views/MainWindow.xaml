@@ -1,11 +1,14 @@
-﻿<Window x:Class="SilentPackage.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SilentPackage"
-        mc:Ignorable="d"
-        Title="MainWindow" ResizeMode="NoResize" Height="450" Width="800">
+﻿<!--/*
+ * Copyright  Michał Młodawski (SimpleMethod)(c) 2020.
+ */-->
+    <Window x:Class="SilentPackage.MainWindow"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:local="clr-namespace:SilentPackage"
+            mc:Ignorable="d"
+            Title="MainWindow" ResizeMode="NoResize" Height="450" Width="800">
     <Grid>
         <TabControl Margin="0,36,0,0">
             <TabItem x:Name="windowsManagement" Header="Zarządzanie kontrolą ">

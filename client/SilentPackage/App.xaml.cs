@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 using SilentPackage.Controllers;
 
@@ -13,8 +15,7 @@ namespace SilentPackage
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            StartupUri = new Uri("Views/MainWindow.xaml", UriKind.Relative);
-
+     
             if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\"))
             {
                 DirectoryInfo di = Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\");
@@ -28,8 +29,14 @@ namespace SilentPackage
             }
             if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data\config.bin"))
             {
+               
                 ConfigurationManagement configManagement = ConfigurationManagement.GetInstance();
-                ReportsManagement management = new ReportsManagement();
+                //DataCollection management = DataCollection.GetInstance();
+                GeneralPurposeTimer generalPurposeTimer = GeneralPurposeTimer.GetInstance();
+            }
+            else
+            {
+                StartupUri = new Uri("Views/MainWindow.xaml", UriKind.Relative);
             }
         }
     }

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿/*
+ * Copyright  Michał Młodawski (SimpleMethod)(c) 2020.
+ */
 
 namespace SilentPackage.Models
 {
@@ -14,6 +13,12 @@ namespace SilentPackage.Models
         public UsersModel(int id, string license, string deviceId)
         {
             Id = id;
+            License = license;
+            DeviceId = deviceId;
+        }
+
+        public UsersModel( string license, string deviceId)
+        {
             License = license;
             DeviceId = deviceId;
         }

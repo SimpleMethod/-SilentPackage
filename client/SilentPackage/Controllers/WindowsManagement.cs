@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+ * Copyright  Michał Młodawski (SimpleMethod)(c) 2020.
+ */
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -117,51 +120,53 @@ namespace SilentPackage.Controllers
         /// </summary>
         /// <param name="unique">If true returns only unique process.</param>
         /// <returns> List of active processes</returns>
+        [Obsolete]
         public List<ProcessesList> GetProcessListPs(bool unique)
         {
             List<ProcessesList> processes = new List<ProcessesList>();
-            using (PowerShell ps = PowerShell.Create())
+            using var ps = PowerShell.Create();
+            ps.AddScript(unique ? "ps | select -unique" : "ps");
+            Collection<PSObject> results = ps.Invoke();
+     
+            foreach (var result in results)
             {
-                ps.AddScript(unique ? "ps | select -unique" : "ps");
-                Collection<PSObject> results = ps.Invoke();
-                foreach (var result in results)
+                var baseObj = result.BaseObject;
+                if (baseObj is Process preprocess)
                 {
-                    var baseObj = result.BaseObject;
-                    if (baseObj is Process preprocess)
+                    try
                     {
+                        var processName = preprocess.ProcessName;
+                        var processId = preprocess.Id;
+                        var startTime = "Access denied";
                         try
                         {
-                            var processName = preprocess.ProcessName;
-                            var processId = preprocess.Id;
-                            var startTime = "No access";
-                            try
-                            {
-                                startTime = preprocess.StartTime.ToString(CultureInfo.InvariantCulture);
-                            }
-                            catch (Win32Exception e)
-                            {
-                            }
-                            catch (ArgumentOutOfRangeException e)
-                            {
-                            }
-                            processes.Add(new ProcessesList(processName, processId, startTime));
+                            startTime = preprocess.StartTime.ToString(CultureInfo.InvariantCulture);
+                        }
+                        catch (Win32Exception e)
+                        {
+                           
                         }
                         catch (ArgumentOutOfRangeException e)
                         {
-                            Console.WriteLine(e);
-                            return null;
+                          
                         }
-                        catch (InvalidOperationException e)
-                        {
-                            Console.WriteLine(e);
-                            return null;
-                        }
-
+                        processes.Add(new ProcessesList(processName, processId, startTime));
+                    }
+                    catch (ArgumentOutOfRangeException e)
+                    {
+                       
+                        return processes;
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                      
+                        return processes;
                     }
 
                 }
-                return processes;
+
             }
+            return processes;
         }
 
         /// <summary>

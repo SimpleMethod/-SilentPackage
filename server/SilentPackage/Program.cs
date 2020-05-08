@@ -1,4 +1,6 @@
-
+/*
+ * Copyright  Micha³ M³odawski (SimpleMethod)(c) 2020.
+ */
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+ * Copyright  Michał Młodawski (SimpleMethod)(c) 2020.
+ */
+using System;
 using System.Management;
 using System.Security.Cryptography;
 using System.Text;
