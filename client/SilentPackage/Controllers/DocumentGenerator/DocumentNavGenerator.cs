@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿/*
+ * Copyright  Michał Młodawski (SimpleMethod)(c) 2020.
+ */
+using System.Text;
 
 namespace SilentPackage.Controllers.DocumentGenerator
 {

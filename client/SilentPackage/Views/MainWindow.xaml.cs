@@ -1,4 +1,6 @@
-﻿
+﻿/*
+ * Copyright  Michał Młodawski (SimpleMethod)(c) 2020.
+ */
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -395,6 +397,14 @@ namespace SilentPackage
             configModel.License = fileManagement.Base64Encode(dataHandler.EncryptText(ProtectLicenseKey(settingsPage_CC_Key_TextBox.Password)));
             configModel.IntervalTime = int.Parse(settingsPage_TP_Offset_TexBox.Text);
             fileManagement.CreateFile(null,"config.bin", Encoding.ASCII.GetBytes(JsonSerializer.Serialize(configModel)), true);
+            HttpClient client = new HttpClient();
+            if (_settings.OfflineMode.Equals(false))
+            {
+                var identification = new UserIdentification();
+                StringBuilder urlBuilder = new StringBuilder(settingsPage_CC_URL_TextBox.Text+"/api/1.1/users/" + settingsPage_CC_Key_TextBox.Password+"/"+ identification.GetMachineID());
+                client.SetDeviceID(urlBuilder.ToString());
+            }
+           
             MessageBox.Show("Zapisano ustawienia, uruchom ponownie program!");
         }
 

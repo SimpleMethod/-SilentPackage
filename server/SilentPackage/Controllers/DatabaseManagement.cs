@@ -1,14 +1,13 @@
-﻿using System;
+﻿/*
+ * Copyright  Michał Młodawski (SimpleMethod)(c) 2020.
+ */
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.Data.Sqlite;
 using SilentPackage.Models;
 
@@ -49,10 +48,29 @@ namespace SilentPackage.Controllers
 
         private SqliteConnection OpenDatabase(string name, string path)
         {
-            #if RELEASE
-            path = System.IO.Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+#if RELEASE
+            try
+            {
+                var temp = Process.GetCurrentProcess().MainModule;
+                if (temp != null)
+                {
+                    path = Path.GetDirectoryName(temp.FileName);
+                }
+                else
+                {
+                    return  null;
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+
             Console.WriteLine(path);
-            #endif
+#endif
             var sqliteConnection = new SqliteConnection("Data Source=" + @path + @"\" + @name);
             try
             {
@@ -60,17 +78,21 @@ namespace SilentPackage.Controllers
             }
             catch (SqliteException e)
             {
-        
-                throw;
+                Console.WriteLine(e.ToString());
+                ; throw;
             }
             return sqliteConnection;
         }
 
+        /// <summary>
+        /// Closing connection to the database.
+        /// </summary>
         private void CloseDatabase()
         {
             _sqliteConnection.Close();
             _sqliteConnection.Dispose();
         }
+
 
         public UsersModel GetUser(string license)
         {
@@ -100,6 +122,37 @@ namespace SilentPackage.Controllers
             dbCommand.Dispose();
             return usersModel;
         }
+
+        public List<UsersModel> GetUsers()
+        {
+            List<UsersModel> usersModels = new List<UsersModel>();
+        
+            StringBuilder sqlQueryBuilder = new StringBuilder("SELECT * FROM users;");
+            var dbCommand = new SqliteCommand(sqlQueryBuilder.ToString(), _sqliteConnection);
+            SqliteDataReader dataReader = dbCommand.ExecuteReader();
+            while (dataReader.Read())
+            {
+                UsersModel usersModel = new UsersModel();
+                if (!dataReader.IsDBNull(0) && !dataReader.IsDBNull(1))
+                {
+                    usersModel.Id = dataReader.GetInt32(0);
+                    usersModel.License = dataReader.GetString(1);
+                }
+                try
+                {
+                    usersModel.DeviceId = !dataReader.IsDBNull(2) ? dataReader.GetString(2) : null;
+                }
+                catch (InvalidOperationException)
+                {
+                    usersModel.DeviceId = null;
+                }
+                usersModels.Add(usersModel);
+            }
+            dbCommand.Dispose();
+            return usersModels;
+        }
+
+
 
         public void CreateUser(string license)
         {
