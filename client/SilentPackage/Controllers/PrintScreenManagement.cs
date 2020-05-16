@@ -71,15 +71,10 @@ namespace SilentPackage.Controllers
                 ImageCodecInfo encode = GetEncoderInfo("image/jpeg");
                 try
                 {
-                    //bmp.Save(path, ImageFormat.Jpeg);          
                     var param = new EncoderParameters(1);
                     param.Param[0] = new EncoderParameter(Encoder.Quality, (long)jpegQuality);
                     bmp.Save(filepath+fileName, encode, param);
                 }
-                //catch (ExternalException e)
-               // {
-               //     MessageBox.Show(e.ToString());
-               // }
                 catch (ArgumentNullException e)
                 {
                     MessageBox.Show(e.ToString());

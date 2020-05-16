@@ -30,7 +30,7 @@ namespace SilentPackage.Controllers
             }
             catch (DirectoryNotFoundException e)
             {
-               // Console.WriteLine(e);
+               // Debug.WriteLine(e);
                 //throw;
             }
         }

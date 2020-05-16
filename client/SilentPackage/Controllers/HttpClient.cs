@@ -3,6 +3,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -27,10 +28,10 @@ namespace SilentPackage.Controllers
         {
             if (string.IsNullOrEmpty(data))
             {
-                Console.WriteLine("Error");
+                Debug.WriteLine("Error");
                 return "Error";
             }
-            //Console.WriteLine(data + @"\n");
+            //Debug.WriteLine(data + @"\n");
             var webRequest = WebRequest.Create(url);
             webRequest.Method = method;
             webRequest.ContentType = @"application/json; charset=utf-8";
@@ -78,7 +79,7 @@ namespace SilentPackage.Controllers
         public string MakeWebRequest(string url, string method, bool returnOnlyHttpStatus)
         {
           
-            //Console.WriteLine(data + @"\n");
+            //Debug.WriteLine(data + @"\n");
             var webRequest = WebRequest.Create(url);
             webRequest.Method = method;
             webRequest.ContentType = @"application/json; charset=utf-8";

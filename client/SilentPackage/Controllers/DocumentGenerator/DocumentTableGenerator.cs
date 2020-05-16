@@ -28,6 +28,12 @@ namespace SilentPackage.Controllers.DocumentGenerator
                 if (option == 0)
                 {
                     ProcessList processList = (ProcessList) (object)stack.Pop();
+
+                    if (processList == null)
+                    {
+                        _table += "";
+                    }
+
                     _table +="<h4>Data raportu: "+ DateTimeOffset.FromUnixTimeSeconds(processList.Timestamp) + "</h4>";  
                     _table += @"<div class=""table-responsive""><table class=""table table-striped table-sm""><thead><tr><th scope=""col"">#</th><th scope=""col"">ID</th><th scope=""col"">Nazwa</th><th scope=""col"">Data startu</th></tr></thead><tbody>";
                     foreach (var modelProcessList in processList.ProcessObjectList)

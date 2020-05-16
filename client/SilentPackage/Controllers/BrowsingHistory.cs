@@ -3,8 +3,10 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Windows;
 using Microsoft.Data.Sqlite;
 
 namespace SilentPackage.Controllers
@@ -113,7 +115,7 @@ namespace SilentPackage.Controllers
             }
             catch (ArgumentException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return null;
             }
         }
@@ -141,7 +143,7 @@ namespace SilentPackage.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return false;
 
             }
@@ -152,14 +154,15 @@ namespace SilentPackage.Controllers
         /// <returns>Status of the operation.</returns>
         private bool MakeDirectory()
         {
+           
             try
             {
-                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\" + _accountProfile.GetName());
+                DirectoryInfo di = Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\" + _accountProfile.GetName());
                 return true;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e.Message);
                 throw;
             }
 
@@ -176,13 +179,14 @@ namespace SilentPackage.Controllers
             }
             try
             {
+              
                 File.Copy(_accountProfile.GePath() + @"\History", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\" + _accountProfile.GetName() + @"\History_COPY.db", true);
-                Console.WriteLine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+                Debug.WriteLine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
                 return true;
             }
             catch (IOException e)
             {
-                Console.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
 
@@ -233,8 +237,8 @@ namespace SilentPackage.Controllers
             }
             catch (Exception f)
             {
-                Console.WriteLine(f);
-                throw;
+                Debug.WriteLine(f);
+                return null;
             }
             finally
             {
@@ -254,7 +258,6 @@ namespace SilentPackage.Controllers
             List<BrHistory> bHistories = new List<BrHistory>();
             try
             {
-
                 StringBuilder SQLqueryStandard = new StringBuilder("SELECT urls.url,urls.title, (visits.visit_time / 1000000 + (strftime('%s', '1601-01-01'))), visits.visit_duration FROM visits INNER JOIN urls ON visits.url=urls.id WHERE visits.visit_time  order by visits.id desc limit $;");
                 SQLqueryStandard.Replace("$", limit.ToString());
                 if (GetDataBase())
@@ -281,7 +284,7 @@ namespace SilentPackage.Controllers
             }
             catch (Exception f)
             {
-                Console.WriteLine(f);
+                Debug.WriteLine(f);
                 throw;
             }
             finally
@@ -299,7 +302,7 @@ namespace SilentPackage.Controllers
         /// <returns>Status of the operation.</returns>
         public bool GetHistoryFromDatabase(long startRange, long stopRange)
         {
-            Console.WriteLine(_accountProfile.GetName());
+            Debug.WriteLine(_accountProfile.GetName());
             if (GetDataBase())
             {
                 if (OpenDatabase(startRange, stopRange))
@@ -318,7 +321,7 @@ namespace SilentPackage.Controllers
         public bool GetHistoryFromDatabase(long limit)
         {
 
-            Console.WriteLine(_accountProfile.GetName());
+            Debug.WriteLine(_accountProfile.GetName());
             if (GetDataBase())
             {
                 if (OpenDatabase(limit))

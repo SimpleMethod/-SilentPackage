@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -283,7 +284,7 @@ namespace SilentPackage
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception);
+                Debug.WriteLine(exception);
                 throw;
             }
 
@@ -401,10 +402,13 @@ namespace SilentPackage
             if (_settings.OfflineMode.Equals(false))
             {
                 var identification = new UserIdentification();
-                StringBuilder urlBuilder = new StringBuilder(settingsPage_CC_URL_TextBox.Text+"/api/1.1/users/" + settingsPage_CC_Key_TextBox.Password+"/"+ identification.GetMachineID());
+                StringBuilder urlBuilder = new StringBuilder(settingsPage_CC_URL_TextBox.Text+"/api/1.1/users/" + settingsPage_CC_Key_TextBox.Password+"/"+ settingsPage_ID_ID_TextBox.Text);
                 client.SetDeviceID(urlBuilder.ToString());
             }
-           
+            using (StreamWriter sw = File.CreateText(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data\debug.bin"))
+            {
+                sw.WriteLine(settingsPage_ID_ID_TextBox.Text);
+            }
             MessageBox.Show("Zapisano ustawienia, uruchom ponownie program!");
         }
 

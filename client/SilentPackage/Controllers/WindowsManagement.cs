@@ -106,7 +106,7 @@ namespace SilentPackage.Controllers
                 }
                 catch (Exception e)
                 {
-                    // Console.WriteLine(e);
+                    // Debug.WriteLine(e);
                     // throw;
                 }
             }

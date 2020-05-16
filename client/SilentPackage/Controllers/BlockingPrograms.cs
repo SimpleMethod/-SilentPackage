@@ -3,6 +3,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security;
 using System.Windows;
@@ -114,7 +115,7 @@ namespace SilentPackage.Controllers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Debug.WriteLine(e);
                     return false;
                 }
             }
@@ -143,7 +144,7 @@ namespace SilentPackage.Controllers
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e);
+                        Debug.WriteLine(e);
                         return false;
                     }
                 }
@@ -166,7 +167,7 @@ namespace SilentPackage.Controllers
                     Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies", true);
                 if (key != null)
                 {
-                    Console.WriteLine(key.GetValueNames().Contains("Explorer"));
+                    Debug.WriteLine(key.GetValueNames().Contains("Explorer"));
                     return (key.GetValueNames().Contains("Explorer"));
                 }
 
@@ -174,7 +175,7 @@ namespace SilentPackage.Controllers
             }
             catch (NullReferenceException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return false;
             }
             catch (SecurityException e)
@@ -203,7 +204,7 @@ namespace SilentPackage.Controllers
             }
             catch (NullReferenceException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return false;
             }
         }
@@ -227,7 +228,7 @@ namespace SilentPackage.Controllers
             }
             catch (NullReferenceException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return false;
             }
         }
@@ -257,7 +258,7 @@ namespace SilentPackage.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return false;
             }
         }
@@ -286,7 +287,7 @@ namespace SilentPackage.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return false;
             }
         }
