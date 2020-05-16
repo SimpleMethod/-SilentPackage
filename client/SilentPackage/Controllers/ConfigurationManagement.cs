@@ -3,6 +3,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using SilentPackage.Models;
@@ -26,7 +27,11 @@ namespace SilentPackage.Controllers
                     if (_mOInstance == null)
                     {
                         _mOInstance = new ConfigurationManagement();
-                        _deviceId = new UserIdentification().GetMachineID();
+
+
+                        bool fileExist = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data\debug.bin");
+                        _deviceId = fileExist ? File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data\debug.bin") : new UserIdentification().GetMachineID(); 
+
                     }
                 }
             }

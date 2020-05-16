@@ -3,6 +3,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -55,22 +56,22 @@ namespace SilentPackage.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return files;
             }
             catch (DirectoryNotFoundException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return files;
             }
             catch (ArgumentException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return files;
             }
             catch (NullReferenceException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return files;
             }
 
@@ -117,17 +118,17 @@ namespace SilentPackage.Controllers
 
             catch (DirectoryNotFoundException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return error;
             }
             catch (ArgumentException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return error;
             }
             catch (NullReferenceException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return error;
             }
             finally
@@ -172,7 +173,7 @@ namespace SilentPackage.Controllers
                     }
                     catch (NullReferenceException e)
                     {
-                        Console.WriteLine(e);
+                        Debug.WriteLine(e);
                     }
 
                 }
@@ -194,17 +195,17 @@ namespace SilentPackage.Controllers
             }
             catch (IOException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return null;
             }
             catch (UnauthorizedAccessException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return null;
             }
             catch (ArgumentNullException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return null;
             }
         }
@@ -281,7 +282,7 @@ namespace SilentPackage.Controllers
                         }
                         catch (NullReferenceException e)
                         {
-                            Console.WriteLine(e);
+                            Debug.WriteLine(e);
                         }
 
                     }
@@ -316,7 +317,7 @@ namespace SilentPackage.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return null;
             }
 

