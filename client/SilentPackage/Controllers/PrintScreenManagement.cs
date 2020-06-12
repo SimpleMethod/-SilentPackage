@@ -77,7 +77,7 @@ namespace SilentPackage.Controllers
                 }
                 catch (ArgumentNullException e)
                 {
-                    MessageBox.Show(e.ToString());
+                  //  MessageBox.Show(e.ToString());
                 }
             }
         }
